@@ -16,13 +16,13 @@ public class ClientMain {
     public void init(String idCliente) {
         System.out.println("Iniciando cliente: " + idCliente);
         // TODO: Implementar
+        client.connect();
     }
 
     public static void main(String[] args) {
         /*
            FIXME: Remover essas strings fixas
-           Como podemos fazer para que o cliente receba um parâmetro indicando a qual servidor
-           ele deve se conectar e o seu ID?
+           Opções: fazer interface perguntando URI e ID ou então utilizar args[]
         */
         String removeMe = "ws://localhost:8080";
         String removeMe2 = "idCliente";
@@ -30,9 +30,10 @@ public class ClientMain {
         try {
             WebSocketClient client = new Client(new URI(removeMe));
 
+            // Cria instância de execução (ClientMain) a partir do socket (client)
             ClientMain main = new ClientMain(client);
-
             main.init(removeMe2);
+
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
