@@ -4,6 +4,7 @@ import org.java_websocket.client.WebSocketClient;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 
 public class ClientMain {
 
@@ -20,22 +21,38 @@ public class ClientMain {
     }
 
     public static void main(String[] args) {
-        /*
-           FIXME: Remover essas strings fixas
-           Opções: fazer interface perguntando URI e ID ou então utilizar args[]
-        */
-        String removeMe = "ws://localhost:8080";
-        String removeMe2 = "idCliente";
 
-        try {
-            WebSocketClient client = new Client(new URI(removeMe));
+        String uriInput;
+        String idInput;
 
-            // Cria instância de execução (ClientMain) a partir do socket (client)
-            ClientMain main = new ClientMain(client);
-            main.init(removeMe2);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Informe a URI do servidor. Deixe em branco para a URI padrão.");
+        uriInput = sc.nextLine().replace("\n", "");
+        if (uriInput.isEmpty()) uriInput = "ws://localhost:8080";
+        System.out.println();
 
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        do {
+            do {
+                System.out.println("Informe um nome para se identificar no servidor.");
+                idInput = sc.nextLine().replace("\n", "");
+                if (!idInput.isEmpty()) break;
+                System.out.println("Nome inválido. Tente novamente.");
+            } while (true);
+            System.out.println();
+
+            try {
+                // Cria socket baseado na implementação Client
+                WebSocketClient client = new Client(new URI(uriInput + "/playerID=" + idInput));
+                // Cria instância de execução (ClientMain) a partir do socket (client)
+                ClientMain main = new ClientMain(client);
+
+                main.init(idInput);
+
+                if (main.client.isOpen()) break;
+
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        } while (true);
     }
 }

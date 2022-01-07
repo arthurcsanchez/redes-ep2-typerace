@@ -14,13 +14,19 @@ public class Server extends WebSocketServer {
      */
     private final Map<String, WebSocket> connections;
 
+    /**
+     * Construtor.
+     *
+     * @param port Indica porta em que socket será criado
+     * @param connections Indica mapa em que estão ou serão inseridos os IDs e sockets dos clientes
+     */
     public Server(int port, Map<String, WebSocket> connections) {
         super(new InetSocketAddress(port));
         this.connections = connections;
     }
 
     /**
-     * Chamada quando jogador entra. Verifica se jogador que entrou é válido (se já estava antes no servidor)
+     * Chamada quando jogador entra (conexão já foi estabelecida). Verifica se jogador que entrou é válido (se já estava antes no servidor), insere no mapa e transmite mensagem de entrada.
      *
      * @param conn Client do jogador que entra; deve ser comparado com o mapa connections
      * @param handshake ?
@@ -28,19 +34,26 @@ public class Server extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         // TODO: Implementar
+        if (connections.containsKey(getIDfromSocket(conn))) {
+            conn.send("O nome \"" + getIDfromSocket(conn) + "\" já está em uso. Tente novamente.");
+            conn.closeConnection(4002, "Nome já utilizado por outro jogador");
+        }
+
     }
 
     /**
-     * Chamada quando o jogador sai. Informa motivo de saída do jogador
+     * Chamada quando o jogador sai (conexão já foi encerrada). Informa motivo de saída do jogador
      *
      * @param conn Client do jogador que sai; pode ser comparado com o mapa connections
-     * @param code Código de erro
+     * @param code Código de erro (conferir em <a href="https://github.com/Luka967/websocket-close-codes">WebSocket Close Codes</a>)
      * @param reason String descrevendo o erro
-     * @param remote ?
+     * @param remote Indica se decisão de saída foi tomada local ou remotamente (em relação ao servidor)
      */
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        // TODO: Implementar
+        System.out.println(getIDfromSocket(conn) + " desconectado. Motivo: " + reason + "(Cód. " + code + ")." + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
+        broadcast(getIDfromSocket(conn) + " foi desconectado da partida.");
+        connections.remove(getIDfromSocket(conn));
     }
 
     /**
@@ -62,8 +75,7 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        // TODO: Implementar
-        ex.printStackTrace();
+        conn.closeConnection(4001, "Lançamento da exceção " + ex.toString());
     }
 
     /**
@@ -71,6 +83,16 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onStart() {
-        // TODO: Implementar
+        System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
+    }
+
+    /**
+     * Extrai ID do jogador inserido na URI onde o socket (cliente) se conecta.
+     *
+     * @param conn Cliente do jogador buscado; tem sua URI extraída
+     */
+    private String getIDfromSocket(WebSocket conn) {
+        int start = conn.getResourceDescriptor().indexOf("playerID=") + 9;
+        return conn.getResourceDescriptor().substring(start);
     }
 }
