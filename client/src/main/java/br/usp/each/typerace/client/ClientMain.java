@@ -10,16 +10,30 @@ public class ClientMain {
 
     private WebSocketClient client;
 
+    /**
+     * Construtor.
+     * @param client Indica socket com cliente a ser executado
+     */
     public ClientMain(WebSocketClient client) {
         this.client = client;
     }
 
+    /**
+     * Inicializa cliente.
+     * @param idCliente ID do cliente
+     */
     public void init(String idCliente) {
         System.out.println("Iniciando cliente: " + idCliente);
         // TODO: Implementar
         client.connect();
     }
 
+
+
+    /**
+     * Método inicial do programa executor do cliente.
+     * @param args Argumentos passados pela linha de comando
+     */
     public static void main(String[] args) {
 
         String uriInput;

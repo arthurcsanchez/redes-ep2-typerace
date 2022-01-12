@@ -33,12 +33,18 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // TODO: Implementar
-        if (connections.containsKey(getIDfromSocket(conn))) {
+        if (connections.containsValue(conn)) {
+            conn.send("Conexão duplicada. Desconectando todas as instâncias.");
+            conn.closeConnection(4003, "Conexão duplicada.");
+        } else if (connections.containsKey(getIDfromSocket(conn))) {
             conn.send("O nome \"" + getIDfromSocket(conn) + "\" já está em uso. Tente novamente.");
             conn.closeConnection(4002, "Nome já utilizado por outro jogador");
+        } else {
+            connections.put(getIDfromSocket(conn), conn);
+            System.out.println(getIDfromSocket(conn) + " conectado.");
+            broadcast(getIDfromSocket(conn) + " entrou na partida.");
+            // SUGGESTION: enviar para conn mensagem introdutória, com regras do jogo, comando para iniciar, etc.
         }
-
     }
 
     /**
