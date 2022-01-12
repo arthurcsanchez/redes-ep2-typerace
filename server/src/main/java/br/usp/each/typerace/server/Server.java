@@ -255,7 +255,7 @@ public class Server extends WebSocketServer {
     }
 
     /**
-     * Insere palavras no banco de palavras. Acessar gerador de palavras <a href="https://www.palabrasaleatorias.com/palavras-aleatorias.php?fs=10&fs2=0&Submit=Nova+palavra">aqui</a>.
+     * Insere palavras no banco de palavras. Acessar gerador de palavras <a href="https://www.palabrasaleatorias.com/palavras-aleatorias.php?fs=10&fs2=0&Submit=Nova+palavra">aqui</a> ou <a href="https://randomwordsgen.com/palavras-aleatorias">aqui</a>.
      */
     private void insertWords() {
         wordBank.add("Palavras"); wordBank.add("Banco"); wordBank.add("Computação"); wordBank.add("Redes"); wordBank.add("Sistema"); wordBank.add("Informações");
@@ -279,5 +279,24 @@ public class Server extends WebSocketServer {
         wordBank.add("Hibernar"); wordBank.add("Pesado");wordBank.add("Facção");wordBank.add("Tubo");wordBank.add("Arco");wordBank.add("Adicionar");
         wordBank.add("Bolso"); wordBank.add("Transpirar");wordBank.add("Cantores");wordBank.add("Aluno");wordBank.add("Coringa");wordBank.add("Cornija");
         wordBank.add("Quadro"); wordBank.add("Estresse");wordBank.add("Cobertura");wordBank.add("Pai");wordBank.add("Vez");wordBank.add("Ambientalismo");
+        wordBank.add("Empurre"); wordBank.add("Bravo");wordBank.add("Supermercado");wordBank.add("Coador");wordBank.add("Ateu");wordBank.add("Muleteiro");
+        wordBank.add("Atriz"); wordBank.add("Nariz");wordBank.add("Revista");wordBank.add("Barretina");wordBank.add("Ninja");wordBank.add("Hospitalidade");
+        wordBank.add("Defeito"); wordBank.add("Prego");wordBank.add("Pescador");wordBank.add("Pesos");wordBank.add("Guia");wordBank.add("Brilhante");
+        wordBank.add("Pugilista"); wordBank.add("Especial");wordBank.add("Pausa");wordBank.add("Menina");wordBank.add("Desalento");wordBank.add("Lugar");
+        wordBank.add("Lamente"); wordBank.add("Regojizo");wordBank.add("Nome");wordBank.add("Feio");wordBank.add("Arca");wordBank.add("Dipstick");
+        wordBank.add("Paciente"); wordBank.add("Quadrado");wordBank.add("Sismo");wordBank.add("Assunto");wordBank.add("Utilitário");wordBank.add("Ciclo");
+        wordBank.add("Incorporar"); wordBank.add("Supremo");wordBank.add("Colher de sopa");wordBank.add("Pressione");wordBank.add("Junta");wordBank.add("Bonito");
+        wordBank.add("Advogada"); wordBank.add("Baixa");wordBank.add("Associado");wordBank.add("Ousar");wordBank.add("Aparecer");wordBank.add("Tom");
+        wordBank.add("Gravíssimo"); wordBank.add("Desfalcar");wordBank.add("Hotel");wordBank.add("Incapaz");wordBank.add("Seguro");wordBank.add("Aplique");
+        wordBank.add("Lugar algum"); wordBank.add("Relatório");wordBank.add("Refeitório");wordBank.add("Asiática");wordBank.add("Feliz");wordBank.add("Suponha");
+        wordBank.add("Ameaçar"); wordBank.add("Desconhecido");wordBank.add("Acessibilidade");wordBank.add("O negócio");wordBank.add("Contra");wordBank.add("Pintura");
+        wordBank.add("A maioria"); wordBank.add("Conduta");wordBank.add("Além");wordBank.add("Uma");wordBank.add("Católico");wordBank.add("Habilitar");
+        wordBank.add("Encorajar"); wordBank.add("Óvulo");wordBank.add("Gangue");wordBank.add("Dedetizadora");wordBank.add("Ribeirão");wordBank.add("Fisionomia");
+        wordBank.add("Raro"); wordBank.add("Ferro");wordBank.add("Quieto");wordBank.add("Estimativa");wordBank.add("Quente");wordBank.add("Colega");
+        wordBank.add("Call center"); wordBank.add("Quadrático");wordBank.add("Exposição");wordBank.add("Fonte");wordBank.add("Triangulação");wordBank.add("Forte");
+        wordBank.add("Cerveja"); wordBank.add("Critério");wordBank.add("Boca");wordBank.add("Admissionalidade");wordBank.add("Sombrio");wordBank.add("Bolo");
+        wordBank.add("Orar"); wordBank.add("Civil");wordBank.add("Revirar");wordBank.add("Impeachment");wordBank.add("Caracterização");wordBank.add("Auto-escola");
+        wordBank.add("Profundidade"); wordBank.add("Batalha");wordBank.add("Analisar");wordBank.add("Doença");wordBank.add("Familiar");wordBank.add("Orgulho");
+        wordBank.add("Ocidental"); wordBank.add("Engenharia");wordBank.add("Legítimo");wordBank.add("Concentração");wordBank.add("Primo");wordBank.add("Desenvoltura");
     }
 }
