@@ -93,7 +93,7 @@ public class Server extends WebSocketServer {
     }
 
     /**
-     * Chamada a cada recebimento de mensagem dos jogadores. Realiza funções como início de partida e encerramento de conexão, quando não há jogo em andamento, e checa respostas quando há.
+     * Chamada a cada recebimento de mensagem dos clientes. Realiza funções como início de partida e encerramento de conexão, quando não há jogo em andamento, e checa respostas quando há.
      *
      * @param conn Client do jogador que envia mensagem; pode ser comparado com o mapa connections
      * @param message String de texto enviada pelo jogador
@@ -147,7 +147,7 @@ public class Server extends WebSocketServer {
      * @param conn Cliente do jogador buscado; tem sua URI extraída
      */
     private String getIDfromSocket(WebSocket conn) {
-        int start = conn.getResourceDescriptor().indexOf("playerID=") + 9;
+        int start = conn.getResourceDescriptor().indexOf("/", 5) + 1;
         return conn.getResourceDescriptor().substring(start);
     }
 

@@ -9,19 +9,32 @@ import java.util.Scanner;
 
 public class Client extends WebSocketClient {
 
-
+    /**
+     * Construtor.
+     * @param serverUri URI com o qual o cliente se conecta.
+     */
     public Client(URI serverUri) {
         super(serverUri);
     }
 
+    /**
+     * Chamada quando a conexão com o servidor é estabelecida.
+     * @param handshakedata ?
+     */
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         // TODO: Implementar
+        System.out.println("Conexão estabelecida com o servidor.");
     }
 
+    /**
+     * Chamada quando uma mensagem é recebida do servidor. Deve, por exemplo, imprimí-las.
+     * @param message String da mensagem.
+     */
     @Override
     public void onMessage(String message) {
         // TODO: Implementar
+        System.out.println(message);
     }
 
     /**

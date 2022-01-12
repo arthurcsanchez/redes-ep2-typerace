@@ -5,6 +5,7 @@ import org.java_websocket.client.WebSocketClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class ClientMain {
 
@@ -24,7 +25,6 @@ public class ClientMain {
      */
     public void init(String idCliente) {
         System.out.println("Iniciando cliente: " + idCliente);
-        // TODO: Implementar
         client.connect();
     }
 
@@ -46,27 +46,28 @@ public class ClientMain {
         System.out.println();
 
         do {
-            do {
-                System.out.println("Informe um nome para se identificar no servidor.");
-                idInput = sc.nextLine().replace("\n", "");
-                if (!idInput.isEmpty()) break;
-                System.out.println("Nome inválido. Tente novamente.");
-            } while (true);
-            System.out.println();
-
-            try {
-                // Cria socket baseado na implementação Client
-                WebSocketClient client = new Client(new URI(uriInput + "/playerID=" + idInput));
-                // Cria instância de execução (ClientMain) a partir do socket (client)
-                ClientMain main = new ClientMain(client);
-
-                main.init(idInput);
-
-                if (main.client.isOpen()) break;
-
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Informe um nome para se identificar no servidor.");
+            idInput = sc.nextLine().replace("\n", "");
+            if (!idInput.isEmpty()) break;
+            System.out.println("Nome inválido. Tente novamente.");
         } while (true);
+        System.out.println();
+
+        try {
+            WebSocketClient client = new Client(new URI(uriInput + "/" + idInput));
+            ClientMain main = new ClientMain(client);
+
+            main.init(idInput);
+
+            // FIXME: cliente não se conecta com sucesso ao servidor (main.client.isOpen() == false)
+
+            while (!main.client.isClosed()) {
+                main.client.send(sc.nextLine());
+            }
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        // TODO: implementar recebimento de strings do terminal e enviar para servidor
     }
 }
