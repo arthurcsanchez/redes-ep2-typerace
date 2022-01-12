@@ -5,6 +5,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
+import java.util.*;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,6 +34,11 @@ public class Server extends WebSocketServer {
     private final Map<String, Integer> playerState;
 
     /**
+     * Banco de palavras para o jogo.
+     */
+    private final Set<String> wordBank;
+
+    /**
      * Construtor.
      *
      * @param port Indica porta em que socket será criado
@@ -42,6 +49,7 @@ public class Server extends WebSocketServer {
         this.connections = connections;
         this.state = 0;
         this.playerState = new TreeMap<>();
+        this.wordBank = new HashSet<>();
     }
 
     /**
@@ -92,13 +100,17 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onMessage(WebSocket conn, String message) {
-        if (message.equalsIgnoreCase("pronto")) {
-            broadcast(getIDfromSocket(conn) + " está pronto para começar.");
-            playerState.put(getIDfromSocket(conn), 1);
-        } else if (message.equalsIgnoreCase("sair")) {
-            conn.closeConnection(1001, "Solicitação do jogador");
-        } else if (message.equalsIgnoreCase("aguardar")) {
-            this.state = 1;
+        if (this.state != 2) {
+            if (message.equalsIgnoreCase("pronto") && playerState.get(getIDfromSocket(conn)) == 0) {
+                broadcast(getIDfromSocket(conn) + " está pronto para começar.");
+                playerState.put(getIDfromSocket(conn), 1);
+            } else if (message.equalsIgnoreCase("sair")) {
+                conn.closeConnection(1001, "Solicitação do jogador");
+            } else if (message.equalsIgnoreCase("aguardar")) {
+                this.state = 1;
+            }
+        } else {
+            // TODO: lidar com input durante jogo
         }
     }
 
@@ -119,6 +131,7 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
+        insertWords();
         do {
             try {
                 startGame();
@@ -191,6 +204,54 @@ public class Server extends WebSocketServer {
             System.out.println("Iniciando partida.");
             broadcast("Iniciando partida.");
             // TODO: realizar partida
+            List<String> matchWords = new LinkedList<>();
+            findMatchWords(matchWords, 10);
         }
+    }
+
+    /**
+     * Preenche lista de palavras de uma partida
+     * @param l Lista a ser preenchida
+     * @param amount Quantidade de palavras a inserir na lista
+     */
+    private void findMatchWords(List<String> l, int amount) {
+        int item = new Random().nextInt(wordBank.size());
+        int i = 0, count = 0;
+        for (String s : wordBank) {
+            if (i == item) {
+                l.add(s);
+                count++;
+            }
+            i++;
+            if (count >= amount)
+                return;
+        }
+    }
+
+    /**
+     * Insere palavras no banco de palavras. Acessar gerador de palavras <a href="https://www.palabrasaleatorias.com/palavras-aleatorias.php?fs=10&fs2=0&Submit=Nova+palavra">aqui</a>.
+     */
+    private void insertWords() {
+        wordBank.add("Palavras"); wordBank.add("Banco"); wordBank.add("Computação"); wordBank.add("Redes"); wordBank.add("Sistema"); wordBank.add("Informações");
+        wordBank.add("Marte"); wordBank.add("Acoplado");wordBank.add("Cavalete");wordBank.add("Bilhete");wordBank.add("Beterraba");wordBank.add("Ampliar");
+        wordBank.add("Capital"); wordBank.add("Adorável");wordBank.add("Tapa");wordBank.add("Vinho");wordBank.add("Veneza");wordBank.add("Vão");
+        wordBank.add("Mosaico"); wordBank.add("Escape");wordBank.add("Nogueira");wordBank.add("Azul");wordBank.add("Feridos");wordBank.add("Prisioneiro");
+        wordBank.add("Caderno"); wordBank.add("Marcha");wordBank.add("Escritor");wordBank.add("Grade");wordBank.add("Lobisomem");wordBank.add("Piranha");
+        wordBank.add("Vulcão"); wordBank.add("Pistola");wordBank.add("Camping");wordBank.add("Revistas");wordBank.add("Vender");wordBank.add("Dobrável");
+        wordBank.add("Diamante"); wordBank.add("Aldeola");wordBank.add("Valsa");wordBank.add("Bumbum");wordBank.add("Chicote");wordBank.add("Esmeralda");
+        wordBank.add("Queimar"); wordBank.add("Cicatriz");wordBank.add("Cabo");wordBank.add("Cenoura");wordBank.add("Tijolo");wordBank.add("Fátima");
+        wordBank.add("Conde"); wordBank.add("Conta");wordBank.add("Cinto");wordBank.add("Bazuca");wordBank.add("Troféu");wordBank.add("Noiva");
+        wordBank.add("Gotejamento"); wordBank.add("Assistente");wordBank.add("Artista");wordBank.add("Crocodilo");wordBank.add("Giratória");wordBank.add("Ritmo");
+        wordBank.add("Beijos"); wordBank.add("Índios");wordBank.add("Piso");wordBank.add("Peludo");wordBank.add("Jogos");wordBank.add("Passeio");
+        wordBank.add("Silicone"); wordBank.add("Cinquenta");wordBank.add("Costureira");wordBank.add("Rooftop");wordBank.add("Veleiro");wordBank.add("Assassinato");
+        wordBank.add("Botinha"); wordBank.add("Chaleira");wordBank.add("Semeadura");wordBank.add("Direito");wordBank.add("Universitário");wordBank.add("Órfão");
+        wordBank.add("Manicure"); wordBank.add("Arroto");wordBank.add("Botoadura");wordBank.add("Bocal");wordBank.add("Jato");wordBank.add("Trabalhador");
+        wordBank.add("Fundação"); wordBank.add("Procurar");wordBank.add("Espingarda");wordBank.add("Fatiado");wordBank.add("Porta-estandarte");wordBank.add("Voz");
+        wordBank.add("Guarda-roupa"); wordBank.add("Atirar");wordBank.add("Micro-ondas");wordBank.add("Esculpir");wordBank.add("Safira");wordBank.add("Remover");
+        wordBank.add("Verruga"); wordBank.add("Vacina");wordBank.add("Coronavírus");wordBank.add("Recital");wordBank.add("Seringa");wordBank.add("Contagem");
+        wordBank.add("Miar"); wordBank.add("Falsificar");wordBank.add("Polígono");wordBank.add("Vestibulando");wordBank.add("Sinal");wordBank.add("Semaninha");
+        wordBank.add("Hibernar"); wordBank.add("Pesado");wordBank.add("Facção");wordBank.add("Tubo");wordBank.add("Arco");wordBank.add("Adicionar");
+        wordBank.add("Bolso"); wordBank.add("Transpirar");wordBank.add("Cantores");wordBank.add("Aluno");wordBank.add("Coringa");wordBank.add("Cornija");
+        wordBank.add("Quadro"); wordBank.add("Estresse");wordBank.add("Cobertura");wordBank.add("Pai");wordBank.add("Vez");wordBank.add("Ambientalismo");
     }
 }
