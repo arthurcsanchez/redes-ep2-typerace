@@ -47,7 +47,7 @@ public class ClientMain {
         System.out.println();
 
         do {
-            System.out.println("Informe um nome para se identificar no servidor.");
+            System.out.println("Informe um nome para se identificar no servidor. (sem espaços)");
             idInput = sc.nextLine().replace("\n", "");
             if (!idInput.isEmpty()) break;
             System.out.println("Nome inválido. Tente novamente.");
@@ -60,8 +60,6 @@ public class ClientMain {
 
             main.init(idInput);
 
-            // FIXME: cliente não se conecta com sucesso ao servidor (main.client.isOpen() == false)
-
             while (!main.client.isClosed()) {
                 main.client.send(sc.nextLine());
             }
@@ -69,6 +67,5 @@ public class ClientMain {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        // TODO: implementar recebimento de strings do terminal e enviar para servidor
     }
 }

@@ -62,17 +62,36 @@ public class Server extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         if (connections.containsValue(conn)) {
             conn.send("Conexão duplicada. Desconectando todas as instâncias.");
-            conn.closeConnection(4003, "Conexão duplicada.");
+            conn.close(4003, "Conexão duplicada.");
         } else if (connections.containsKey(getIDfromSocket(conn))) {
             conn.send("O nome \"" + getIDfromSocket(conn) + "\" já está em uso. Tente novamente.");
-            conn.closeConnection(4002, "Nome já utilizado por outro jogador");
+            conn.close(4002, "Nome já utilizado por outro jogador");
         } else {
             String connName = getIDfromSocket(conn);
             connections.put(connName, conn);
             playerState.put(connName, 0);
             System.out.println(connName + " conectado.");
+            conn.send("-------");
             broadcast(connName + " entrou na partida.");
-            // SUGGESTION: enviar para conn mensagem introdutória, com regras do jogo, comando para iniciar, etc.
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            conn.send("-------");
+            conn.send("Bem-vindo ao Typerace Online!");
+            conn.send("- REGRAS -");
+            conn.send("O objetivo do jogo é escrever o máximo de palavras no menor tempo possível.");
+            conn.send("Após o início da partida, os jogadores receberão palavras nas suas telas em uma mesma ordem.");
+            conn.send("Se você digitar a palavra corretamente, ganha um ponto.");
+            conn.send("A primeira pessoa a atingir 10 pontos vence a partida!");
+            conn.send("- INICIANDO O JOGO -");
+            conn.send("Quando estiver pronto para jogar, envie o comando /pronto");
+            conn.send("Se houverem mais de dois jogadores no servidor e todos estiverem prontos, uma contagem regressiva se iniciará automaticamente");
+            conn.send("Você pode pedir para interromper a contagem regressiva e esperar o próximo jogador entrar com o comando /aguardar");
+            conn.send("Se você desistir de aguardar, pode utilizar o comando /parar-de-aguardar para continuar a contagem regressiva");
+            conn.send("Para sair do servidor, basta enviar o comando /sair");
+            conn.send("-------");
         }
         if (this.state == 1) this.state = 0;
     }
@@ -87,7 +106,7 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        System.out.println(getIDfromSocket(conn) + " desconectado. Motivo: " + reason + "(Cód. " + code + ")." + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
+        System.out.println(getIDfromSocket(conn) + " desconectado. Motivo: " + reason + " (Cód. " + code + "). " + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
         broadcast(getIDfromSocket(conn) + " foi desconectado da partida.");
         connections.remove(getIDfromSocket(conn));
     }
@@ -101,7 +120,7 @@ public class Server extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         if (this.state != 2) {
-            if (message.equalsIgnoreCase("pronto") && playerState.get(getIDfromSocket(conn)) == 0) {
+            if (message.equalsIgnoreCase("/pronto") && playerState.get(getIDfromSocket(conn)) == 0) {
                 broadcast(getIDfromSocket(conn) + " está pronto para começar.");
                 playerState.put(getIDfromSocket(conn), 1);
                 if (this.state == 0 && connections.size() > 1 && !playerState.containsValue(0)) {
@@ -113,11 +132,11 @@ public class Server extends WebSocketServer {
         		} else if (connections.size() == 1) {
                     broadcast("Pelo menos dois jogadores são necessários para iniciar partida.");
                 }
-            } else if (message.equalsIgnoreCase("sair")) {
-                conn.closeConnection(1001, "Solicitação do jogador");
-            } else if (message.equalsIgnoreCase("aguardar")) {
+            } else if (message.equalsIgnoreCase("/sair")) {
+                conn.close(1001, "Solicitação do jogador");
+            } else if (message.equalsIgnoreCase("/aguardar")) {
                 this.state = 1;
-            } else if (message.equalsIgnoreCase("parar de aguardar")) {
+            } else if (message.equalsIgnoreCase("/parar-de-aguardar")) {
                 this.state = 0;
                 if (connections.size() > 1 && !playerState.containsValue(0)) {
                     try {
@@ -142,7 +161,7 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        conn.closeConnection(4001, "Lançamento da exceção " + ex.toString());
+        conn.close(4001, "Lançamento da exceção " + ex.toString());
     }
 
     /**
@@ -160,7 +179,7 @@ public class Server extends WebSocketServer {
      * @param conn Cliente do jogador buscado; tem sua URI extraída
      */
     private String getIDfromSocket(WebSocket conn) {
-        int start = conn.getResourceDescriptor().indexOf("/", 5) + 1;
+        int start = conn.getResourceDescriptor().indexOf("/", 5) + 2;
         return conn.getResourceDescriptor().substring(start);
     }
 
@@ -217,25 +236,21 @@ public class Server extends WebSocketServer {
         broadcast("Iniciando partida.");
         // TODO: realizar partida
         List<String> matchWords = new LinkedList<>();
-        findMatchWords(matchWords, 10);
+        findMatchWords(matchWords);
     }
 
     /**
-     * Preenche lista de palavras de uma partida
+     * Preenche lista de palavras de uma partida percorrendo em uma ordem aleatória o banco de palavras
      * @param l Lista a ser preenchida
-     * @param amount Quantidade de palavras a inserir na lista
      */
-    private void findMatchWords(List<String> l, int amount) {
+    private void findMatchWords(List<String> l) {
         int item = new Random().nextInt(wordBank.size());
-        int i = 0, count = 0;
+        int i = 0;
         for (String s : wordBank) {
             if (i == item) {
                 l.add(s);
-                count++;
             }
             i++;
-            if (count >= amount)
-                return;
         }
     }
 
