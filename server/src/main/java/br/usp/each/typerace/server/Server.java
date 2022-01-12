@@ -6,6 +6,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Server extends WebSocketServer {
 
@@ -13,6 +14,22 @@ public class Server extends WebSocketServer {
      * Mapeia ID dos jogadores com seus sockets (na forma de um objeto Client)
      */
     private final Map<String, WebSocket> connections;
+
+    /**
+     * Indica estado atual do servidor.
+     * 0: aguardando "pronto" dos jogadores atuais
+     * 1: aguardando próximo jogador
+     * 2: partida em andamento
+     */
+    public int state;
+
+    /**
+     * Indica estado atual de cada jogador.
+     * 0: aguardando
+     * 1: pronto para partida
+     * 2: em partida
+     */
+    private final Map<String, Integer> playerState;
 
     /**
      * Construtor.
@@ -23,6 +40,8 @@ public class Server extends WebSocketServer {
     public Server(int port, Map<String, WebSocket> connections) {
         super(new InetSocketAddress(port));
         this.connections = connections;
+        this.state = 0;
+        this.playerState = new TreeMap<>();
     }
 
     /**
@@ -40,11 +59,14 @@ public class Server extends WebSocketServer {
             conn.send("O nome \"" + getIDfromSocket(conn) + "\" já está em uso. Tente novamente.");
             conn.closeConnection(4002, "Nome já utilizado por outro jogador");
         } else {
-            connections.put(getIDfromSocket(conn), conn);
-            System.out.println(getIDfromSocket(conn) + " conectado.");
-            broadcast(getIDfromSocket(conn) + " entrou na partida.");
+            String connName = getIDfromSocket(conn);
+            connections.put(connName, conn);
+            playerState.put(connName, 0);
+            System.out.println(connName + " conectado.");
+            broadcast(connName + " entrou na partida.");
             // SUGGESTION: enviar para conn mensagem introdutória, com regras do jogo, comando para iniciar, etc.
         }
+        if (this.state == 1) this.state = 0;
     }
 
     /**
@@ -70,7 +92,14 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // TODO: Implementar
+        if (message.equalsIgnoreCase("pronto")) {
+            broadcast(getIDfromSocket(conn) + " está pronto para começar.");
+            playerState.put(getIDfromSocket(conn), 1);
+        } else if (message.equalsIgnoreCase("sair")) {
+            conn.closeConnection(1001, "Solicitação do jogador");
+        } else if (message.equalsIgnoreCase("aguardar")) {
+            this.state = 1;
+        }
     }
 
     /**
@@ -90,6 +119,13 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
+        do {
+            try {
+                startGame();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } while (this.state != 2);
     }
 
     /**
@@ -100,5 +136,61 @@ public class Server extends WebSocketServer {
     private String getIDfromSocket(WebSocket conn) {
         int start = conn.getResourceDescriptor().indexOf("playerID=") + 9;
         return conn.getResourceDescriptor().substring(start);
+    }
+
+    /**
+     * Verifica se há mais de um jogador e se todos estão prontos. Caso positivo, aguarda 5 segundos e inicia a partida.
+     */
+    public void startGame() throws InterruptedException {
+        if (this.state == 0 && connections.size() > 1 && !playerState.containsValue(0)) {
+            System.out.println("Iniciando contagem regressiva para início de partida.");
+            broadcast("Iniciando partida em: ");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            broadcast("5");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            broadcast("4");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            broadcast("3");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            broadcast("2");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            broadcast("1");
+            Thread.sleep(1000);
+            if (this.state == 1) {
+                System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
+                broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
+                return;
+            }
+            this.state = 2;
+            playerState.replaceAll((k, v) -> 2);
+            System.out.println("Iniciando partida.");
+            broadcast("Iniciando partida.");
+            // TODO: realizar partida
+        }
     }
 }

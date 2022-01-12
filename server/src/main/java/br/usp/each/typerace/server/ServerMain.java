@@ -22,10 +22,9 @@ public class ServerMain {
      */
     public void init() {
         System.out.println("Iniciando servidor...");
-        // TODO: Implementar
         server.start();
         server.onStart();
-        // implementar forma de encerrar servidor com server.stop() ex. digitar "encerrar" na linha de comando
+        // TODO: implementar forma de encerrar servidor com server.stop() ex. digitar "encerrar" na linha de comando
     }
 
 
