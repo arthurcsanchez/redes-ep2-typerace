@@ -110,11 +110,24 @@ public class Server extends WebSocketServer {
             		} catch (InterruptedException e) {
                 		e.printStackTrace();
             		}
-        		}
+        		} else if (connections.size() == 1) {
+                    broadcast("Pelo menos dois jogadores são necessários para iniciar partida.");
+                }
             } else if (message.equalsIgnoreCase("sair")) {
                 conn.closeConnection(1001, "Solicitação do jogador");
             } else if (message.equalsIgnoreCase("aguardar")) {
                 this.state = 1;
+            } else if (message.equalsIgnoreCase("parar de aguardar")) {
+                this.state = 0;
+                if (connections.size() > 1 && !playerState.containsValue(0)) {
+                    try {
+                        startGame();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else if (connections.size() == 1) {
+                    broadcast("Pelo menos dois jogadores são necessários para iniciar partida.");
+                }
             }
         } else {
             // TODO: lidar com input durante jogo
@@ -138,7 +151,6 @@ public class Server extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
-
         insertWords();
     }
 

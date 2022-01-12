@@ -27,23 +27,6 @@ public class ClientMain {
     public void init(String idCliente) {
         System.out.println("Iniciando cliente: " + idCliente);
         client.connect();
-        /*
-        try {
-            /*
-            if (client.connectBlocking()) 
-                System.out.println("Conectou");
-            else
-                System.out.println("Não conectou");
-                
-            System.out.println("teste1");
-            client.connectBlocking();
-            System.out.println("teste2");
-
-        } catch (InterruptedException e) {
-            System.out.println("Não conectou");
-            e.printStackTrace();
-        }
-        */
     }
 
 
