@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 public class ClientMain {
 
