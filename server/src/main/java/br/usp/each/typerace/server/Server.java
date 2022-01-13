@@ -39,6 +39,11 @@ public class Server extends WebSocketServer {
     private final Set<String> wordBank;
 
     /**
+     * Lista com palavras do banco de palavras, cuja ordem é randomizada a cada partida.
+     */
+    private List<String> matchWords;
+
+    /**
      * Construtor.
      *
      * @param port Indica porta em que socket será criado
@@ -171,6 +176,7 @@ public class Server extends WebSocketServer {
     public void onStart() {
         System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
         insertWords();
+        this.matchWords = new ArrayList<>(wordBank);
     }
 
     /**
@@ -235,23 +241,8 @@ public class Server extends WebSocketServer {
         System.out.println("Iniciando partida.");
         broadcast("Iniciando partida.");
         // TODO: realizar partida
-        List<String> matchWords = new LinkedList<>();
-        findMatchWords(matchWords);
-    }
 
-    /**
-     * Preenche lista de palavras de uma partida percorrendo em uma ordem aleatória o banco de palavras
-     * @param l Lista a ser preenchida
-     */
-    private void findMatchWords(List<String> l) {
-        int item = new Random().nextInt(wordBank.size());
-        int i = 0;
-        for (String s : wordBank) {
-            if (i == item) {
-                l.add(s);
-            }
-            i++;
-        }
+        Collections.shuffle(this.matchWords);
     }
 
     /**

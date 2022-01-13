@@ -47,7 +47,6 @@ public class Client extends WebSocketClient {
     public void onClose(int code, String reason, boolean remote) {
         System.out.println("Desconectado. Motivo: " + reason + " (Cód. " + code + "). " + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
         System.exit(0);
-        // SUGGESTION: condicionar System.exit(0) para (code != 4002); desconexão por nome inválido levaria a um loop no ClientMain para inserir novo nome
     }
 
     @Override

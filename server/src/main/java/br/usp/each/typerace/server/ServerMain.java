@@ -3,6 +3,7 @@ package br.usp.each.typerace.server;
 import org.java_websocket.server.WebSocketServer;
 
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class ServerMain {
 
@@ -23,7 +24,6 @@ public class ServerMain {
     public void init() {
         System.out.println("Iniciando servidor...");
         server.start();
-        // TODO: implementar forma de encerrar servidor com server.stop() ex. digitar "encerrar" na linha de comando
     }
 
 
@@ -33,12 +33,22 @@ public class ServerMain {
      *
      * @param args Argumentos passados pela linha de comando.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
         WebSocketServer server = new Server(8080, new HashMap<>());
 
         ServerMain main = new ServerMain(server);
 
         main.init();
+
+        while (true) {
+            String input = sc.nextLine();
+            if (input.equalsIgnoreCase("/encerrar")) {
+                System.out.println("Encerrando servidor...");
+                main.server.stop();
+                break;
+            }
+        }
     }
 
 }
