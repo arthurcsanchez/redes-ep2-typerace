@@ -5,10 +5,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.*;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class Server extends WebSocketServer {
 
@@ -34,14 +31,24 @@ public class Server extends WebSocketServer {
     private final Map<String, Integer> playerState;
 
     /**
+     * Lista com 10 elementos, indica quais palavras o jogador ja acertou.
+     */
+    private final Map<String, Boolean[]> palavrasAcertadas;
+
+    /**
      * Banco de palavras para o jogo.
      */
     private final Set<String> wordBank;
 
     /**
-     * Lista com palavras do banco de palavras, cuja ordem é randomizada a cada partida.
+     * Lista com as 10 palavras que terao que ser digitadas pelos jogadores.
      */
     private List<String> matchWords;
+
+    /**
+     * Lista com palavras do banco de palavras, cuja ordem é randomizada a cada partida.
+     */
+    private List<String> bankWords;
 
     /**
      * Construtor.
@@ -54,6 +61,7 @@ public class Server extends WebSocketServer {
         this.connections = connections;
         this.state = 0;
         this.playerState = new TreeMap<>();
+        this.palavrasAcertadas = new TreeMap<>();
         this.wordBank = new HashSet<>();
     }
 
@@ -75,9 +83,12 @@ public class Server extends WebSocketServer {
             String connName = getIDfromSocket(conn);
             connections.put(connName, conn);
             playerState.put(connName, 0);
+            boolean acertos = new boolean[10];
+            palavrasAcertadas.put(connName, acertos);
             System.out.println(connName + " conectado.");
             conn.send("-------");
             broadcast(connName + " entrou na partida.");
+            broadcast(connections.size() + "jogadores estão conectados no servidor.");
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -114,6 +125,7 @@ public class Server extends WebSocketServer {
         System.out.println(getIDfromSocket(conn) + " desconectado. Motivo: " + reason + " (Cód. " + code + "). " + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
         broadcast(getIDfromSocket(conn) + " foi desconectado da partida.");
         connections.remove(getIDfromSocket(conn));
+        broadcast(connections.size() + "jogadores estão conectados no servidor.");
     }
 
     /**
@@ -154,7 +166,19 @@ public class Server extends WebSocketServer {
                 }
             }
         } else {
-            // TODO: lidar com input durante jogo
+            if (matchWords.contains(message)) {
+            	boolean[] acertos = palavrasAcertadas.get(getIDfromSocket(conn))
+            	int nroDaPalavra = matchWords.indexOf(message);
+            	if (acertos[matchWords.indexOf(message)]) {
+            		conn.send("Palavra repetida! Insira outra palavra.");
+            	}
+            	else {
+            		conn.send("Palavra "+(matchWords.indexOf(message)+1)+" correta!");
+            		acertos[]
+            	}
+
+            } else 
+            	conn.send("Palavra incorreta. Tente novamente!");
         }
     }
 
@@ -176,7 +200,7 @@ public class Server extends WebSocketServer {
     public void onStart() {
         System.out.println("Servidor iniciado com sucesso na porta " + this.getPort() + ".");
         insertWords();
-        this.matchWords = new ArrayList<>(wordBank);
+        this.bankWords = new ArrayList<>(wordBank);
     }
 
     /**
@@ -190,7 +214,7 @@ public class Server extends WebSocketServer {
     }
 
     /**
-     * Verifica se há mais de um jogador e se todos estão prontos. Caso positivo, aguarda 5 segundos e inicia a partida.
+     * Aguarda 5 segundos e inicia a partida.
      */
     public void startGame() throws InterruptedException {
         System.out.println("Iniciando contagem regressiva para início de partida.");
@@ -240,9 +264,25 @@ public class Server extends WebSocketServer {
         playerState.replaceAll((k, v) -> 2);
         System.out.println("Iniciando partida.");
         broadcast("Iniciando partida.");
-        // TODO: realizar partida
 
-        Collections.shuffle(this.matchWords);
+        Collections.shuffle(this.bankWords);
+        this.matchWords = new ArrayList();
+    	broadcast("\n************************************\n\nPALAVRAS A SEREM DIGITADAS:\n");
+    	ListIterator<String> it = bankWords.listIterator();
+    	for (int i = 0; i < 10; i++) {
+    		String palavra = it.next();
+    		broadcast(palavra);
+    		matchWords.add(palavra);
+    	}
+    }
+
+	/**
+     * Inicia a Partida. Embaralha matchWords e imprime seus 10 primeiros elementos para os jogadores escreverem.
+     * Imprime as pontuações e termina o jogo caso um jogador termine as palavras.
+     */
+    public void game() {
+
+
     }
 
     /**

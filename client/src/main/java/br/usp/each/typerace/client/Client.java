@@ -10,11 +10,23 @@ import java.util.Scanner;
 public class Client extends WebSocketClient {
 
     /**
+     * Score do jogador.
+     */
+    private int score;
+
+    /**
+     * Lista com 10 elementos, indica quais palavras o jogador ja acertou.
+     */
+    private boolean[] palavrasAcertadas;
+
+    /**
      * Construtor.
      * @param serverUri URI com o qual o cliente se conecta.
      */
     public Client(URI serverUri) {
         super(serverUri);
+        this.score = 0;
+        this.palavrasAcertadas = new boolean[10];
     }
 
     /**
@@ -33,8 +45,21 @@ public class Client extends WebSocketClient {
      */
     @Override
     public void onMessage(String message) {
-        // TODO: Implementar
-        System.out.println(message);
+
+        if (message.endsWith(" correta!")) {
+            String mensagem[] = message.split(" ");
+            int nroPalavra = Integer.parseInt(mensagem[1]) - 1;
+            if (!palavrasAcertadas[nroPalavra]) {
+                score++;
+                if (score >= 1) System.out.println("PQP!");
+                palavrasAcertadas[nroPalavra] = true;
+                System.out.println(message);
+            } else 
+                System.out.println("Palavra ja escrita! Escreva outra palavra.");
+        } else
+            System.out.println(message);
+
+        // Implementar palavras respondidas
     }
 
     /**

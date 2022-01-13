@@ -35,10 +35,10 @@ public class ClientMain {
      * Método inicial do programa executor do cliente.
      * @param args Argumentos passados pela linha de comando
      */
-    public static void main(String[] args) {
+    public static void main(String[] args){
 
         String uriInput;
-        String idInput;
+        String idInput = "";
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Informe a URI do servidor. Deixe em branco para a URI padrão.");
@@ -46,12 +46,12 @@ public class ClientMain {
         if (uriInput.isEmpty()) uriInput = "ws://localhost:8080";
         System.out.println();
 
-        do {
+        while (idInput.isEmpty()) {
             System.out.println("Informe um nome para se identificar no servidor. (sem espaços)");
             idInput = sc.nextLine().replace("\n", "");
-            if (!idInput.isEmpty()) break;
-            System.out.println("Nome inválido. Tente novamente.");
-        } while (true);
+            if (idInput.isEmpty())
+                System.out.println("Nome inválido. Tente novamente.");
+        }
         System.out.println();
 
         try {
