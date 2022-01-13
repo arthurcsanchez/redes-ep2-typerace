@@ -5,7 +5,6 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 import java.util.*;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,6 +43,11 @@ public class Server extends WebSocketServer {
     private List<String> matchWords;
 
     /**
+     * Mapeia jogadores a arranjo com: [0] posição do jogador na lista matchWords; [1] quantidade de pontos do jogador; [2] quantidade de erros do jogador
+     */
+    private final Map<String, Integer[]> playerStatistics;
+
+    /**
      * Construtor.
      *
      * @param port Indica porta em que socket será criado
@@ -55,6 +59,7 @@ public class Server extends WebSocketServer {
         this.state = 0;
         this.playerState = new TreeMap<>();
         this.wordBank = new HashSet<>();
+        this.playerStatistics = new TreeMap<>();
     }
 
     /**
@@ -75,9 +80,11 @@ public class Server extends WebSocketServer {
             String connName = getIDfromSocket(conn);
             connections.put(connName, conn);
             playerState.put(connName, 0);
+            playerStatistics.put(connName, new Integer[]{0, 0, 0});
             System.out.println(connName + " conectado.");
             conn.send("-------");
             broadcast(connName + " entrou na partida.");
+            broadcast(connections.size() + ((connections.size() <= 1) ? " jogador está conectado agora." : " jogadores estão conectados agora."));
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -89,7 +96,7 @@ public class Server extends WebSocketServer {
             conn.send("O objetivo do jogo é escrever o máximo de palavras no menor tempo possível.");
             conn.send("Após o início da partida, os jogadores receberão palavras nas suas telas em uma mesma ordem.");
             conn.send("Se você digitar a palavra corretamente, ganha um ponto.");
-            conn.send("A primeira pessoa a atingir 10 pontos vence a partida!");
+            conn.send("A primeira pessoa a atingir 20 pontos vence a partida!");
             conn.send("- INICIANDO O JOGO -");
             conn.send("Quando estiver pronto para jogar, envie o comando /pronto");
             conn.send("Se houverem mais de dois jogadores no servidor e todos estiverem prontos, uma contagem regressiva se iniciará automaticamente");
@@ -124,10 +131,11 @@ public class Server extends WebSocketServer {
      */
     @Override
     public void onMessage(WebSocket conn, String message) {
+        String name = getIDfromSocket(conn);
         if (this.state != 2) {
             if (message.equalsIgnoreCase("/pronto") && playerState.get(getIDfromSocket(conn)) == 0) {
-                broadcast(getIDfromSocket(conn) + " está pronto para começar.");
-                playerState.put(getIDfromSocket(conn), 1);
+                broadcast(name + " está pronto para começar.");
+                playerState.put(name, 1);
                 if (this.state == 0 && connections.size() > 1 && !playerState.containsValue(0)) {
         			try {
                 		startGame();
@@ -154,7 +162,21 @@ public class Server extends WebSocketServer {
                 }
             }
         } else {
-            // TODO: lidar com input durante jogo
+            if (message.equals(matchWords.get(playerStatistics.get(name)[0]))) {
+                playerStatistics.get(name)[1] += 1;
+                conn.send("Acertou!");
+            } else {
+                playerStatistics.get(name)[2] += 1;
+                conn.send("Errou.");
+            }
+            if (playerStatistics.get(name)[1] >= 20) {
+                endGame();
+                return;
+            }
+            playerStatistics.get(name)[0] += 1;
+            conn.send("-------");
+            conn.send("Palavra " + (playerStatistics.get(name)[0] + 1) + ":");
+            conn.send(matchWords.get(playerStatistics.get(name)[0]));
         }
     }
 
@@ -240,9 +262,54 @@ public class Server extends WebSocketServer {
         playerState.replaceAll((k, v) -> 2);
         System.out.println("Iniciando partida.");
         broadcast("Iniciando partida.");
-        // TODO: realizar partida
-
         Collections.shuffle(this.matchWords);
+        broadcast("-------");
+        broadcast("Palavra 1:");
+        broadcast(matchWords.get(0));
+    }
+
+    private void endGame() {
+        this.state = 0;
+        for (Map.Entry<String, Integer> e : playerState.entrySet()) {
+            e.setValue(0);
+        }
+
+        List<Map.Entry<String, Integer>> leaderboardEntries = new LinkedList<>();
+        for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
+            leaderboardEntries.add(new Map.Entry<String, Integer>() {
+                @Override
+                public String getKey() {
+                    return e.getKey();
+                }
+
+                @Override
+                public Integer getValue() {
+                    return e.getValue()[1];
+                }
+
+                @Override
+                public Integer setValue(Integer integer) {
+                    return null;
+                }
+            });
+        }
+        leaderboardEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        broadcast("-------");
+        broadcast("VITÓRIA DE " + leaderboardEntries.get(0).getKey() + "!");
+        broadcast("-------");
+        broadcast("Placar:");
+        int i = 1;
+        for (Map.Entry<String, Integer> e : leaderboardEntries) {
+            broadcast(i++ + ": " + e.getKey() + " (" + e.getValue() + " pontos)");
+        }
+
+        for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
+            e.setValue(new Integer[]{0, 0, 0});
+        }
+
+        broadcast("-------");
+        broadcast("Para iniciar outra partida, digite /pronto e aguarde os outros jogadores.");
     }
 
     /**
