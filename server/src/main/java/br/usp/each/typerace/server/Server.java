@@ -33,7 +33,7 @@ public class Server extends WebSocketServer {
     /**
      * Lista com 10 elementos, indica quais palavras o jogador ja acertou.
      */
-    private final Map<String, Boolean[]> palavrasAcertadas;
+    private final Map<String, boolean[]> palavrasAcertadas;
 
     /**
      * Banco de palavras para o jogo.
@@ -83,7 +83,7 @@ public class Server extends WebSocketServer {
             String connName = getIDfromSocket(conn);
             connections.put(connName, conn);
             playerState.put(connName, 0);
-            boolean acertos = new boolean[10];
+            boolean[] acertos = new boolean[10];
             palavrasAcertadas.put(connName, acertos);
             System.out.println(connName + " conectado.");
             conn.send("-------");
@@ -165,18 +165,24 @@ public class Server extends WebSocketServer {
                     broadcast("Pelo menos dois jogadores são necessários para iniciar partida.");
                 }
             }
+
+        // Entradas das palavras do jogo.
         } else {
             if (matchWords.contains(message)) {
-            	boolean[] acertos = palavrasAcertadas.get(getIDfromSocket(conn))
+            	boolean[] acertos = palavrasAcertadas.get(getIDfromSocket(conn));
             	int nroDaPalavra = matchWords.indexOf(message);
-            	if (acertos[matchWords.indexOf(message)]) {
+            	if (acertos[nroDaPalavra]) {
             		conn.send("Palavra repetida! Insira outra palavra.");
             	}
             	else {
-            		conn.send("Palavra "+(matchWords.indexOf(message)+1)+" correta!");
-            		acertos[]
+            		conn.send("Palavra "+(nroDaPalavra+1)+" correta!");
+            		acertos[nroDaPalavra] = true;
+            		palavrasAcertadas.put(getIDfromSocket(conn), acertos);
+            		for (int i=0; i<10; i++) {
+            			if (!acertos[i]) break;
+            			if (i==9) endGame(); // Chamada de fim de jogo.
+            		}
             	}
-
             } else 
             	conn.send("Palavra incorreta. Tente novamente!");
         }
@@ -277,12 +283,18 @@ public class Server extends WebSocketServer {
     }
 
 	/**
-     * Inicia a Partida. Embaralha matchWords e imprime seus 10 primeiros elementos para os jogadores escreverem.
-     * Imprime as pontuações e termina o jogo caso um jogador termine as palavras.
+     * Encerra a Partida.
+     * Imprime as pontuações e termina o jogo.
      */
-    public void game() {
+    public void endGame() {
 
+    	//TODO: alterar os playerState para 0.
 
+    	this.state = 0;
+
+    	broadcast("\n************************************\n\nACABOOOOOOU\n");
+
+    	//TODO: imprimir o resultado.
     }
 
     /**
