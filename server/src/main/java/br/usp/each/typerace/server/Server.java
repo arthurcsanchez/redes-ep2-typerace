@@ -235,7 +235,7 @@ public class Server extends WebSocketServer {
 
         List<Map.Entry<String, Integer>> leaderboardEntries = new LinkedList<>();
         for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
-            leaderboardEntries.add(new Map.Entry<>() {
+            leaderboardEntries.add(new Map.Entry<String, Integer>() {
                 @Override
                 public String getKey() {
                     return e.getKey();
