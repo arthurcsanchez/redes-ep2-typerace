@@ -4,6 +4,7 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.NoSuchElementException;
 
 public class ServerMain {
 
@@ -33,7 +34,7 @@ public class ServerMain {
      *
      * @param args Argumentos passados pela linha de comando.
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException{
         Scanner sc = new Scanner(System.in);
         WebSocketServer server = new Server(8080, new HashMap<>());
 
@@ -41,8 +42,10 @@ public class ServerMain {
 
         main.init();
 
+        String input = "";
         while (true) {
-            String input = sc.nextLine();
+            if (sc.hasNext()) 
+                input = sc.nextLine();
             if (input.equalsIgnoreCase("/encerrar")) {
                 System.out.println("Encerrando servidor...");
                 main.server.stop();
