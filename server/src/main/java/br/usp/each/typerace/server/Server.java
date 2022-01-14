@@ -314,5 +314,26 @@ public class Server extends WebSocketServer {
         wordBank.add("Orar"); wordBank.add("Civil");wordBank.add("Revirar");wordBank.add("Impeachment");wordBank.add("Caracterização");wordBank.add("Auto-escola");
         wordBank.add("Profundidade"); wordBank.add("Batalha");wordBank.add("Analisar");wordBank.add("Doença");wordBank.add("Familiar");wordBank.add("Orgulho");
         wordBank.add("Ocidental"); wordBank.add("Engenharia");wordBank.add("Legítimo");wordBank.add("Concentração");wordBank.add("Primo");wordBank.add("Desenvoltura");
+        wordBank.add("Três"); wordBank.add("Ajustamento");wordBank.add("De madeira");wordBank.add("Veterano");wordBank.add("De ativos");wordBank.add("Diretamente");
+        wordBank.add("Absorver"); wordBank.add("Testemunho");wordBank.add("Vínculo");wordBank.add("Culpa");wordBank.add("Especialidade");wordBank.add("Danificar");
+        wordBank.add("Defensiva"); wordBank.add("Admissão");wordBank.add("Campeão");wordBank.add("A respeito de");wordBank.add("Fardo");wordBank.add("Fabricante");
+        wordBank.add("Visita"); wordBank.add("Expectativa");wordBank.add("Mineirinho");wordBank.add("Avançado");wordBank.add("Carta");wordBank.add("Grito");
+        wordBank.add("Alta"); wordBank.add("Envolver");wordBank.add("Primeiro");wordBank.add("Justo");wordBank.add("Caro");wordBank.add("Convicção");
+        wordBank.add("Informar"); wordBank.add("Doloroso");wordBank.add("Crucial");wordBank.add("Relativo");wordBank.add("Esforço");wordBank.add("Marca");
+        wordBank.add("Dependente"); wordBank.add("Narrativa");wordBank.add("Aborto");wordBank.add("Indicação");wordBank.add("Guia de turismo");wordBank.add("Capital financeiro");
+        wordBank.add("Solução"); wordBank.add("Universal");wordBank.add("Terra");wordBank.add("Gastar");wordBank.add("Mover");wordBank.add("Professor");
+        wordBank.add("Avô"); wordBank.add("Calcular");wordBank.add("Tradicional");wordBank.add("Exibição");wordBank.add("Comprar");wordBank.add("Acompanhar");
+        wordBank.add("Ouvir"); wordBank.add("Posso");wordBank.add("Confiança");wordBank.add("Demonstração");wordBank.add("Redação");wordBank.add("Pessoal");
+        wordBank.add("Leitor"); wordBank.add("Raramente");wordBank.add("Absoluto");wordBank.add("Particularmente");wordBank.add("Mal");wordBank.add("Descrever");
+        wordBank.add("Capaz"); wordBank.add("Fotografia");wordBank.add("Mordida");wordBank.add("Rebocando");wordBank.add("Capitalismo");wordBank.add("Salário");
+        wordBank.add("Digital"); wordBank.add("Sem teto");wordBank.add("Pesquisa");wordBank.add("Rosto");wordBank.add("Óleo");wordBank.add("Longe");
+        wordBank.add("Decidir"); wordBank.add("Progresso");wordBank.add("Escalar");wordBank.add("Construir");wordBank.add("Computado");wordBank.add("Revolução");
+        wordBank.add("Cozinhar"); wordBank.add("Colocar");wordBank.add("Ficção");wordBank.add("Desenhar");wordBank.add("Cara");wordBank.add("Responder");
+        wordBank.add("Casa"); wordBank.add("Embrulho");wordBank.add("Ação");wordBank.add("Conceito");wordBank.add("Pós-moderno");wordBank.add("Estético");
+        wordBank.add("Casual"); wordBank.add("Calor");wordBank.add("Estrutura");wordBank.add("Medo");wordBank.add("Quero");wordBank.add("Baile");
+        wordBank.add("Zona leste"); wordBank.add("Profundo");wordBank.add("Banimento");wordBank.add("Velho");wordBank.add("Raridade");wordBank.add("Ácido");
+        wordBank.add("Por quê"); wordBank.add("Limitação");wordBank.add("Representar");wordBank.add("Em si");wordBank.add("Andrógeno");wordBank.add("Alternativo");
+        wordBank.add("Direto"); wordBank.add("Formol");wordBank.add("Capataz");wordBank.add("Escolha");wordBank.add("Esquema");wordBank.add("Míssil");
+        wordBank.add("Ágora"); wordBank.add("Distinto");wordBank.add("Construção");wordBank.add("Ocupar");wordBank.add("Ambientes");wordBank.add("Mais");
     }
 }
