@@ -86,7 +86,7 @@ public class Server extends WebSocketServer {
             broadcast(connName + " entrou na partida.");
             broadcast(connections.size() + ((connections.size() <= 1) ? " jogador está conectado agora." : " jogadores estão conectados agora."));
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -100,8 +100,6 @@ public class Server extends WebSocketServer {
             conn.send("- INICIANDO O JOGO -");
             conn.send("Quando estiver pronto para jogar, envie o comando /pronto");
             conn.send("Se houverem mais de dois jogadores no servidor e todos estiverem prontos, uma contagem regressiva se iniciará automaticamente");
-            conn.send("Você pode pedir para interromper a contagem regressiva e esperar o próximo jogador entrar com o comando /aguardar");
-            conn.send("Se você desistir de aguardar, pode utilizar o comando /parar-de-aguardar para continuar a contagem regressiva");
             conn.send("Para sair do servidor, basta enviar o comando /sair");
             conn.send("-------");
         }
@@ -147,26 +145,15 @@ public class Server extends WebSocketServer {
                 }
             } else if (message.equalsIgnoreCase("/sair")) {
                 conn.close(1001, "Solicitação do jogador");
-            } else if (message.equalsIgnoreCase("/aguardar")) {
-                this.state = 1;
-            } else if (message.equalsIgnoreCase("/parar-de-aguardar")) {
-                this.state = 0;
-                if (connections.size() > 1 && !playerState.containsValue(0)) {
-                    try {
-                        startGame();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else if (connections.size() == 1) {
-                    broadcast("Pelo menos dois jogadores são necessários para iniciar partida.");
-                }
             }
         } else {
             if (message.equals(matchWords.get(playerStatistics.get(name)[0]))) {
                 playerStatistics.get(name)[1] += 1;
+                conn.send(":correct:" + playerStatistics.get(name)[1]);
                 conn.send("Acertou!");
             } else {
                 playerStatistics.get(name)[2] += 1;
+                conn.send(":errors:" + playerStatistics.get(name)[2]);
                 conn.send("Errou.");
             }
             if (playerStatistics.get(name)[1] >= 20) {
@@ -218,46 +205,16 @@ public class Server extends WebSocketServer {
         System.out.println("Iniciando contagem regressiva para início de partida.");
         broadcast("Iniciando partida em: ");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         broadcast("5");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         broadcast("4");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         broadcast("3");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         broadcast("2");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         broadcast("1");
         Thread.sleep(1000);
-        if (this.state == 1) {
-            System.out.println("Contagem regressiva para início de partida interrompida por solicitação de aguardo.");
-            broadcast("Contagem regressiva interrompida; aguardando o próximo jogador.");
-            return;
-        }
         this.state = 2;
         playerState.replaceAll((k, v) -> 2);
         System.out.println("Iniciando partida.");
@@ -296,7 +253,8 @@ public class Server extends WebSocketServer {
         leaderboardEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 
         broadcast("-------");
-        broadcast("VITÓRIA DE " + leaderboardEntries.get(0).getKey() + "!");
+        broadcast("VITÓRIA DE " + leaderboardEntries.get(0).getKey().toUpperCase() + "!");
+        broadcast(":informStats:");
         broadcast("-------");
         broadcast("Placar:");
         int i = 1;

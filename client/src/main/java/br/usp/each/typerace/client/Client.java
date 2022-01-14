@@ -9,6 +9,9 @@ import java.util.Scanner;
 
 public class Client extends WebSocketClient {
 
+    private int wrongAnswers = 0;
+    private int correctAnswers = 0;
+
     /**
      * Construtor.
      * @param serverUri URI com o qual o cliente se conecta.
@@ -23,7 +26,6 @@ public class Client extends WebSocketClient {
      */
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        // TODO: Implementar
         System.out.println("Conexão estabelecida com o servidor.");
     }
 
@@ -33,8 +35,10 @@ public class Client extends WebSocketClient {
      */
     @Override
     public void onMessage(String message) {
-        // TODO: Implementar
-        System.out.println(message);
+        if (message.contains(":errors:")) wrongAnswers = Integer.parseInt(message.substring(8));
+        else if (message.contains(":correct:")) correctAnswers = Integer.parseInt(message.substring(9));
+        else if (message.equals(":informStats:")) System.out.println("Você acertou " + correctAnswers + " e errou " + wrongAnswers + " palavras.");
+        else System.out.println(message);
     }
 
     /**
