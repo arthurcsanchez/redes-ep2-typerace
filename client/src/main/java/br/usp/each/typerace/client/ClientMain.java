@@ -47,7 +47,7 @@ public class ClientMain {
         System.out.println();
 
         do {
-            System.out.println("Informe um nome para se identificar no servidor. (sem espaços)");
+            System.out.println("Informe um nome para se identificar no servidor. (sem espaços ou acentos)");
             idInput = sc.nextLine().replace("\n", "");
             if (!idInput.isEmpty()) break;
             System.out.println("Nome inválido. Tente novamente.");
