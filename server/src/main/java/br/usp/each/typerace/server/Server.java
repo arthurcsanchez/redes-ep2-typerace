@@ -260,12 +260,14 @@ public class Server extends WebSocketServer {
         int i = 1;
         for (Map.Entry<String, Integer> e : leaderboardEntries) {
             broadcast(i++ + ": " + e.getKey() + " (" + e.getValue() + " pontos)");
+            // TODO: colocar acertos e erros de cada jogador no placar também
         }
 
         for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
             e.setValue(new Integer[]{0, 0, 0});
         }
 
+        // TODO: imprimir tempo decorrido da partida
         broadcast("-------");
         broadcast("Para iniciar outra partida, digite /pronto e aguarde os outros jogadores.");
     }
