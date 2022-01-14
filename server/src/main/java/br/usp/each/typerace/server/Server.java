@@ -4,15 +4,8 @@ import com.google.common.base.Stopwatch;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-
 import java.net.InetSocketAddress;
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
 public class Server extends WebSocketServer {
 
@@ -163,7 +156,7 @@ public class Server extends WebSocketServer {
                 conn.send(":errors:" + playerStatistics.get(name)[2]);
                 conn.send("Errou.");
             }
-            if (playerStatistics.get(name)[1] >= 4) {
+            if (playerStatistics.get(name)[1] >= 20) {
                 endGame();
                 return;
             }
@@ -242,7 +235,7 @@ public class Server extends WebSocketServer {
 
         List<Map.Entry<String, Integer>> leaderboardEntries = new LinkedList<>();
         for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
-            leaderboardEntries.add(new Map.Entry<String, Integer>() {
+            leaderboardEntries.add(new Map.Entry<>() {
                 @Override
                 public String getKey() {
                     return e.getKey();
@@ -275,7 +268,7 @@ public class Server extends WebSocketServer {
             e.setValue(new Integer[]{0, 0, 0});
         }
 
-        System.out.println("Encerrando partida. Ganhador: " + leaderboardEntries.get(0).getKey() + ". Tempo: " + stopwatch.toString());
+        System.out.println("Encerrando partida. Ganhador: " + leaderboardEntries.get(0).getKey() + ". Tempo: " + stopwatch.toString() + ".");
         broadcast("Tempo decorrido da partida: " + stopwatch.toString());
         broadcast("-------");
         broadcast("Para iniciar outra partida, digite /pronto e aguarde os outros jogadores.");

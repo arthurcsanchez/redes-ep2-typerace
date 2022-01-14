@@ -49,6 +49,7 @@ public class Client extends WebSocketClient {
      */
     @Override
     public void onClose(int code, String reason, boolean remote) {
+        if (code == -1) reason = "URI inválida";
         System.out.println("Desconectado. Motivo: " + reason + " (Cód. " + code + "). " + (remote ? "Desconectado pelo cliente." : "Desconectado pelo servidor."));
         System.exit(0);
     }
