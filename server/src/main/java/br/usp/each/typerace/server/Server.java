@@ -1,13 +1,18 @@
 package br.usp.each.typerace.server;
 
+import com.google.common.base.Stopwatch;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 public class Server extends WebSocketServer {
 
@@ -46,6 +51,8 @@ public class Server extends WebSocketServer {
      * Mapeia jogadores a arranjo com: [0] posição do jogador na lista matchWords; [1] quantidade de pontos do jogador; [2] quantidade de erros do jogador
      */
     private final Map<String, Integer[]> playerStatistics;
+
+    private Stopwatch stopwatch;
 
     /**
      * Construtor.
@@ -156,7 +163,7 @@ public class Server extends WebSocketServer {
                 conn.send(":errors:" + playerStatistics.get(name)[2]);
                 conn.send("Errou.");
             }
-            if (playerStatistics.get(name)[1] >= 20) {
+            if (playerStatistics.get(name)[1] >= 4) {
                 endGame();
                 return;
             }
@@ -220,12 +227,14 @@ public class Server extends WebSocketServer {
         System.out.println("Iniciando partida.");
         broadcast("Iniciando partida.");
         Collections.shuffle(this.matchWords);
+        stopwatch = Stopwatch.createStarted();
         broadcast("-------");
         broadcast("Palavra 1:");
         broadcast(matchWords.get(0));
     }
 
     private void endGame() {
+        stopwatch.stop();
         this.state = 0;
         for (Map.Entry<String, Integer> e : playerState.entrySet()) {
             e.setValue(0);
@@ -254,20 +263,20 @@ public class Server extends WebSocketServer {
 
         broadcast("-------");
         broadcast("VITÓRIA DE " + leaderboardEntries.get(0).getKey().toUpperCase() + "!");
-        broadcast(":informStats:");
+        //broadcast(":informStats:");
         broadcast("-------");
         broadcast("Placar:");
         int i = 1;
         for (Map.Entry<String, Integer> e : leaderboardEntries) {
-            broadcast(i++ + ": " + e.getKey() + " (" + e.getValue() + " pontos)");
-            // TODO: colocar acertos e erros de cada jogador no placar também
+            broadcast(i++ + ": " + e.getKey() + " (" + e.getValue() + " pontos, " + playerStatistics.get(e.getKey())[2] + " erros)");
         }
 
         for (Map.Entry<String, Integer[]> e : playerStatistics.entrySet()) {
             e.setValue(new Integer[]{0, 0, 0});
         }
 
-        // TODO: imprimir tempo decorrido da partida
+        System.out.println("Encerrando partida. Ganhador: " + leaderboardEntries.get(0).getKey() + ". Tempo: " + stopwatch.toString());
+        broadcast("Tempo decorrido da partida: " + stopwatch.toString());
         broadcast("-------");
         broadcast("Para iniciar outra partida, digite /pronto e aguarde os outros jogadores.");
     }
@@ -286,7 +295,7 @@ public class Server extends WebSocketServer {
         wordBank.add("Queimar"); wordBank.add("Cicatriz");wordBank.add("Cabo");wordBank.add("Cenoura");wordBank.add("Tijolo");wordBank.add("Fátima");
         wordBank.add("Conde"); wordBank.add("Conta");wordBank.add("Cinto");wordBank.add("Bazuca");wordBank.add("Troféu");wordBank.add("Noiva");
         wordBank.add("Gotejamento"); wordBank.add("Assistente");wordBank.add("Artista");wordBank.add("Crocodilo");wordBank.add("Giratória");wordBank.add("Ritmo");
-        wordBank.add("Beijos"); wordBank.add("Índios");wordBank.add("Piso");wordBank.add("Peludo");wordBank.add("Jogos");wordBank.add("Passeio");
+        wordBank.add("Beijos"); wordBank.add("Indígena");wordBank.add("Piso");wordBank.add("Peludo");wordBank.add("Jogos");wordBank.add("Passeio");
         wordBank.add("Silicone"); wordBank.add("Cinquenta");wordBank.add("Costureira");wordBank.add("Rooftop");wordBank.add("Veleiro");wordBank.add("Assassinato");
         wordBank.add("Botinha"); wordBank.add("Chaleira");wordBank.add("Semeadura");wordBank.add("Direito");wordBank.add("Universitário");wordBank.add("Órfão");
         wordBank.add("Manicure"); wordBank.add("Arroto");wordBank.add("Botoadura");wordBank.add("Bocal");wordBank.add("Jato");wordBank.add("Trabalhador");
@@ -333,9 +342,9 @@ public class Server extends WebSocketServer {
         wordBank.add("Cozinhar"); wordBank.add("Colocar");wordBank.add("Ficção");wordBank.add("Desenhar");wordBank.add("Cara");wordBank.add("Responder");
         wordBank.add("Casa"); wordBank.add("Embrulho");wordBank.add("Ação");wordBank.add("Conceito");wordBank.add("Pós-moderno");wordBank.add("Estético");
         wordBank.add("Casual"); wordBank.add("Calor");wordBank.add("Estrutura");wordBank.add("Medo");wordBank.add("Quero");wordBank.add("Baile");
-        wordBank.add("Zona leste"); wordBank.add("Profundo");wordBank.add("Banimento");wordBank.add("Velho");wordBank.add("Raridade");wordBank.add("Ácido");
+        wordBank.add("Zona leste"); wordBank.add("Profundo");wordBank.add("Banimento");wordBank.add("Velho");wordBank.add("Raridade");wordBank.add("Acidez");
         wordBank.add("Por quê"); wordBank.add("Limitação");wordBank.add("Representar");wordBank.add("Em si");wordBank.add("Andrógeno");wordBank.add("Alternativo");
         wordBank.add("Direto"); wordBank.add("Formol");wordBank.add("Capataz");wordBank.add("Escolha");wordBank.add("Esquema");wordBank.add("Míssil");
-        wordBank.add("Ágora"); wordBank.add("Distinto");wordBank.add("Construção");wordBank.add("Ocupar");wordBank.add("Ambientes");wordBank.add("Mais");
+        wordBank.add("Agora"); wordBank.add("Distinto");wordBank.add("Construção");wordBank.add("Ocupar");wordBank.add("Ambientes");wordBank.add("Mais");
     }
 }
